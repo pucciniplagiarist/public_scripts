@@ -181,6 +181,18 @@ scan_partition_format()
 
 install_docker()
 {
+
+cat > /etc/docker/daemon.json <<EOF
+{
+  "data-root": "/data/docker"
+}
+EOF  
+
+cat > /etc/cron.weekly/docker-cleanup <<EOF
+#!/bin/sh
+docker system prune -a -f --volumes 2>&1 1>/var/log/docker-cleanup.log
+EOF
+
   apt-get -y install docker-ce docker-ce-cli
   curl -Lso /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.24.1/docker-compose-Linux-x86_64
   chmod +x /usr/local/bin/docker-compose
@@ -191,5 +203,13 @@ install_docker()
 
 # Create Partitions
 DISKS=$(scan_for_new_disks)
+echo "DISKS = ${DISKS}"
 scan_partition_format
-install_docker
+echo "after scan_partition_format"
+if ! command -v docker &> /dev/null
+then
+    echo "installing docker"
+    install_docker
+    echo "after installing docker"
+fi
+
