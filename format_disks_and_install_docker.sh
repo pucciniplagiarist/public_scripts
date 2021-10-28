@@ -181,18 +181,20 @@ scan_partition_format()
 
 install_docker()
 {
-
+  echo "writing daemon.json"
 cat > /etc/docker/daemon.json <<EOF
 {
-  "data-root": "/data/docker"
+  "data-root": "/datadisks/disk1/docker"
 }
 EOF  
 
+  echo "writing cron file"
 cat > /etc/cron.weekly/docker-cleanup <<EOF
 #!/bin/sh
 docker system prune -a -f --volumes 2>&1 1>/var/log/docker-cleanup.log
 EOF
 
+  echo "installing docker"
   apt-get -y install docker-ce docker-ce-cli
   curl -Lso /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.24.1/docker-compose-Linux-x86_64
   chmod +x /usr/local/bin/docker-compose
