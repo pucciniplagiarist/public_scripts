@@ -208,10 +208,10 @@ DISKS=$(scan_for_new_disks)
 echo "DISKS = ${DISKS}"
 scan_partition_format
 echo "after scan_partition_format"
-if ! command -v docker &> /dev/null
-then
+#if ! command -v docker &> /dev/null
+#then
     echo "installing docker"
     install_docker
     echo "after installing docker"
-fi
+#fi
 
