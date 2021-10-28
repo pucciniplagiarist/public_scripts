@@ -182,6 +182,7 @@ scan_partition_format()
 install_docker()
 {
   echo "writing daemon.json"
+mkdir /etc/docker
 cat > /etc/docker/daemon.json <<EOF
 {
   "data-root": "/datadisks/disk1/docker"
@@ -208,6 +209,11 @@ DISKS=$(scan_for_new_disks)
 echo "DISKS = ${DISKS}"
 scan_partition_format
 echo "after scan_partition_format"
+
+#Wait until cloud-init has completed
+cloud-init status --wait  > /dev/null 2>&1
+[ $? -ne 0 ] && echo 'Cloud-init failed' && exit 1
+
 #if ! command -v docker &> /dev/null
 #then
     echo "installing docker"
